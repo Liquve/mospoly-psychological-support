@@ -1,21 +1,38 @@
+from typing import Optional
 from uuid import UUID
+from datetime import datetime
 
 from pydantic import BaseModel, Field
 
 
 class ArticleCreateRequest(BaseModel):
+    slug: str = Field(..., min_length=1, max_length=255)
+    image: Optional[str] = None
+    date: Optional[datetime] = None
+    author: Optional[str] = Field(None, max_length=255)
     title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
     text: str = Field(..., min_length=1)
 
 
 class ArticleUpdateRequest(BaseModel):
-    title: str = Field(..., min_length=1, max_length=255)
-    text: str = Field(..., min_length=1)
+    slug: Optional[str] = Field(None, min_length=1, max_length=255)
+    image: Optional[str] = None
+    date: Optional[datetime] = None
+    author: Optional[str] = Field(None, max_length=255)
+    title: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = None
+    text: Optional[str] = Field(None, min_length=1)
 
 
 class ArticleResponse(BaseModel):
     id: UUID
+    slug: str
+    image: Optional[str]
+    date: Optional[datetime]
+    author: Optional[str]
     title: str
+    description: Optional[str]
     text: str
 
     class Config:
