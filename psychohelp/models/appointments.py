@@ -61,3 +61,8 @@ class Appointment(Base):
         "Psychologist", foreign_keys=[psychologist_id], back_populates="appointments"
     )
     review = relationship("Review", back_populates="appointment", uselist=False)
+    reschedule_requests = relationship(
+        "AppointmentRescheduleRequest",
+        back_populates="appointment",
+        cascade="all, delete-orphan",
+    )

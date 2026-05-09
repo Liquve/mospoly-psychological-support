@@ -3,7 +3,9 @@ from psychohelp.repositories.appointments import (
     AppointmentStatus,
     UUID,
 )
+from psychohelp.models.appointment_reschedule_requests import AppointmentRescheduleStatus
 from pydantic import BaseModel, EmailStr
+from pydantic import Field
 from datetime import datetime
 from typing import Optional
 
@@ -87,3 +89,36 @@ class AppointmentCancelRequest(BaseModel):
 
 class AppointmentDoneRequest(BaseModel):
     conclusion: str
+
+
+class AppointmentRescheduleRequestCreate(BaseModel):
+    scheduled_time: datetime
+    remind_time: Optional[datetime] = None
+    venue: Optional[str] = Field(None, min_length=1, max_length=128)
+    comment: Optional[str] = Field(None, max_length=512)
+
+
+class AppointmentRescheduleRejectRequest(BaseModel):
+    rejection_comment: str = Field(..., min_length=1, max_length=512)
+
+
+class AppointmentRescheduleRequestResponse(BaseModel):
+    id: UUID
+    appointment_id: UUID
+    requested_by_user_id: Optional[UUID] = None
+    status: AppointmentRescheduleStatus
+    old_scheduled_time: datetime
+    old_remind_time: Optional[datetime] = None
+    old_venue: str
+    old_comment: Optional[str] = None
+    requested_scheduled_time: datetime
+    requested_remind_time: Optional[datetime] = None
+    requested_venue: Optional[str] = None
+    requested_comment: Optional[str] = None
+    rejection_comment: Optional[str] = None
+    created_at: datetime
+    responded_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+        use_enum_values = True
