@@ -273,7 +273,7 @@ async def reject_reschedule(
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.put("/{id}/done", summary="Завершить прием и написать заключение")
+@router.put("/{id}/done", summary="Завершить прием и сохранить комментарии")
 async def complete_appointment_endpoint(
         id: UUID,
         request: AppointmentDoneRequest,
@@ -282,10 +282,15 @@ async def complete_appointment_endpoint(
     """
      Завершает запись на прием (переводит в статус Done).
      Доступно только психологу, который вел этот прием.
-     Требует обязательного заключения (conclusion).
+     Сохраняет комментарий пациенту и внутренний комментарий психологам.
      """
     try:
-        await complete_appointment(id, current_user.id, request.conclusion)
+        await complete_appointment(
+            id,
+            current_user.id,
+            request.patient_comment,
+            request.psychologist_comment,
+        )
         logger.info(f"Appointment completed: {id} by psychologist: {current_user.id}")
         return Response(None, status_code=HTTP_200_OK)
 

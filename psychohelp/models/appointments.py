@@ -47,7 +47,8 @@ class Appointment(Base):
     reason = Column(String(64), nullable=True)
     status = Column(Enum(AppointmentStatus), nullable=False)
     cancel_reason = Column(String(512), nullable=True, comment="Причина отмены")
-    conclusion = Column(String(2048), nullable=True, comment="Заключение психолога")
+    conclusion = Column(String(2048), nullable=True, comment="Комментарий пациенту")
+    psychologist_comment = Column(String(2048), nullable=True, comment="Комментарий психологам")
     scheduled_time = Column(DateTime(timezone=True), nullable=False, comment="Время назначенной встречи")
     remind_time = Column(DateTime(timezone=True), nullable=True, comment="Время напоминания")
     last_change_time = Column(DateTime(timezone=True), nullable=False, comment="Время последнего изменения")
@@ -66,3 +67,7 @@ class Appointment(Base):
         back_populates="appointment",
         cascade="all, delete-orphan",
     )
+
+    @property
+    def patient_comment(self) -> str | None:
+        return self.conclusion

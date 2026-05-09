@@ -4,8 +4,7 @@ from psychohelp.repositories.appointments import (
     UUID,
 )
 from psychohelp.models.appointment_reschedule_requests import AppointmentRescheduleStatus
-from pydantic import BaseModel, EmailStr
-from pydantic import Field
+from pydantic import AliasChoices, BaseModel, EmailStr, Field
 from datetime import datetime
 from typing import Optional
 
@@ -64,6 +63,7 @@ class AppointmentBase(BaseModel):
     venue: str
     comment: Optional[str] = None
     cancel_reason: Optional[str] = None
+    patient_comment: Optional[str] = None
     conclusion: Optional[str] = None
 
     class Config:
@@ -88,7 +88,13 @@ class AppointmentCancelRequest(BaseModel):
 
 
 class AppointmentDoneRequest(BaseModel):
-    conclusion: str
+    patient_comment: str = Field(
+        ...,
+        min_length=1,
+        max_length=2048,
+        validation_alias=AliasChoices("patient_comment", "conclusion"),
+    )
+    psychologist_comment: Optional[str] = Field(None, max_length=2048)
 
 
 class AppointmentRescheduleRequestCreate(BaseModel):
